@@ -1,5 +1,6 @@
 import random
 import string
+from hashlib import sha256
 
 alphabet_min = string.ascii_lowercase
 alphabet_maj = string.ascii_uppercase
@@ -34,6 +35,10 @@ def verification_chiffres(mdp):
             presence_chiffre = True
     return presence_chiffre
 
+def hachage(mdp):
+    mdp_crypt = sha256(mdp.encode('utf-8')).hexdigest()
+    print(f"Mot de passe haché : {mdp_crypt}")
+
 while True:
     password = input("Veuillez entrer votre mot de passe : ")
     if len(password) < 8:
@@ -48,4 +53,5 @@ while True:
         print("\033[1;31mLe mot de passe doit contenir au moins un caractère spécial (!, @, #, $, %, ^, &, *)\033[0m")
     else:
         print("\033[1;32mVotre mot de passe est correct\033[0m")
+        hachage(password)
         break
