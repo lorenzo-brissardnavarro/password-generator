@@ -1,6 +1,15 @@
 [
-    "febfed20eabf087d2a4c7a7648920c1e9c537c3252e7a399395630809fb095ad",
-    "158f463732834a94ce8f2d81ea3938f0a45d9d4f448de78c55dd6174c890598a",
-    "428dc0896fcd19cb8c6afa94b4febca65d24c6b09bb1d6acbf13cfc7731b3b7f",
-    "85f9956fec6f13110bd94d3feb41146a38d43fa31a85914386ffe3d259ad1c6b"
+    {
+        "username": "jean",
+        "mdp": [
+            "85f9956fec6f13110bd94d3feb41146a38d43fa31a85914386ffe3d259ad1c6b",
+            "5aad4b199b99c2c2a4d35b930322eb49724b32cce34fae2176564f79780f0c7d"
+        ]
+    },
+    {
+        "username": "paul",
+        "mdp": [
+            "a61c87696c44fa31ddf8dc76fe4d7cf13dfe5318414acbb306b48114b38296ee"
+        ]
+    }
 ]
