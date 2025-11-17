@@ -1,4 +1,4 @@
-import random
+import json
 import string
 from hashlib import sha256
 
@@ -37,7 +37,15 @@ def verification_chiffres(mdp):
 
 def hachage(mdp):
     mdp_crypt = sha256(mdp.encode('utf-8')).hexdigest()
-    print(f"Mot de passe haché : {mdp_crypt}")
+    try:
+        with open('mots_de_passe.json', 'r') as fichier:
+            data = json.load(fichier)
+    except FileNotFoundError:
+        data = []
+    data.append(mdp_crypt)
+    with open('mots_de_passe.json', 'w') as fichier:
+        json.dump(data, fichier, indent=4)
+
 
 while True:
     password = input("Veuillez entrer votre mot de passe : ")
