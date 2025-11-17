@@ -43,21 +43,28 @@ def affichage_donnees(username):
                 if element['username'] == username:
                     print(element['mdp'])
 
-while True:
-    utilisateur = input("Saisissez votre nom d'utilisateur : ")
-    password = input("Veuillez entrer votre mot de passe : ")
-    if len(password) < 8:
-        print("\033[1;31mLe mot de passe doit contenir au moins 8 caractères\033[0m")
-    elif not verification(password, alphabet_min):
-        print("\033[1;31mLe mot de passe doit contenir au moins une lettre minuscule\033[0m")
-    elif not verification(password, alphabet_maj):
-        print("\033[1;31mLe mot de passe doit contenir au moins une lettre majuscule\033[0m")
-    elif not verification(password, chiffres):
-        print("\033[1;31mLe mot de passe doit contenir au moins un chiffre\033[0m")
-    elif not verification(password, caracteres_speciaux):
-        print("\033[1;31mLe mot de passe doit contenir au moins un caractère spécial (!, @, #, $, %, ^, &, *)\033[0m")
+def valider_mdp(mdp):
+    if len(mdp) < 8:
+        return "Le mot de passe doit contenir au moins 8 caractères"
+    elif not verification(mdp, alphabet_min):
+        return "Le mot de passe doit contenir au moins une lettre minuscule"
+    elif not verification(mdp, alphabet_maj):
+        return "Le mot de passe doit contenir au moins une lettre majuscule"
+    elif not verification(mdp, chiffres):
+        return "Le mot de passe doit contenir au moins un chiffre"
+    elif not verification(mdp, caracteres_speciaux):
+        return "Le mot de passe doit contenir au moins un caractère spécial (!, @, #, $, %, ^, &, *)"
     else:
-        print("\033[1;32mVotre mot de passe respecte les exigences\033[0m")
-        hachage(utilisateur,password)
-        affichage_donnees(utilisateur)
-        break
+        return True
+
+utilisateur = input("Saisissez votre nom d'utilisateur : ")
+def fonctionnement():
+    password = input("Veuillez entrer votre mot de passe : ")
+    verdict = valider_mdp(password)
+    if verdict != True:
+        print(f"\033[1;31m{verdict}\033[0m")
+        return fonctionnement()
+    hachage(utilisateur,password)
+    affichage_donnees(utilisateur)
+
+fonctionnement()
