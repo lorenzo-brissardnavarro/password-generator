@@ -46,6 +46,13 @@ def hachage(mdp):
     with open('mots_de_passe.json', 'w') as fichier:
         json.dump(data, fichier, indent=4)
 
+def affichage_donnees():
+    reponse = input("Voulez-vous afficher vos mots de passe hachés (oui ou non) ? ")
+    if reponse.lower() == "oui":
+        with open('mots_de_passe.json', 'r') as fichier:
+            data = json.load(fichier)
+            for mdp in data:
+                print(mdp)
 
 while True:
     password = input("Veuillez entrer votre mot de passe : ")
@@ -62,4 +69,5 @@ while True:
     else:
         print("\033[1;32mVotre mot de passe est correct\033[0m")
         hachage(password)
+        affichage_donnees()
         break
