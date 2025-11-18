@@ -1,5 +1,13 @@
 from tkinter import *
 from PIL import Image, ImageTk
+import json
+import string
+from hashlib import sha256
+
+alphabet_min = string.ascii_lowercase
+alphabet_maj = string.ascii_uppercase
+caracteres_speciaux = "!@#$%^&*"
+chiffres = string.digits
 
 def page_utilisateur():
     frame_accueil.pack_forget()
@@ -10,6 +18,38 @@ def page_mdp():
     frame_utilisateur.pack_forget()
     frame_mdp.pack(pady=100)
     label_mdp.config(text=f"Bonjour {nom_utilisateur}, saisissez votre mot de passe :")
+
+def password_visibility():
+    if show_password_var.get():
+        entry_mdp.config(show="")
+    else:
+        entry_mdp.config(show="*")
+
+def verification(mdp, comparateur):
+    presence = False
+    for lettre in mdp:
+        if lettre in comparateur:
+            presence = True
+    return presence
+
+def valider_mdp():
+    mdp = mdp_var.get()
+    if len(mdp) < 8:
+        label_erreur_mdp['text'] = "Le mot de passe doit contenir au moins 8 caractères"
+    elif not verification(mdp, alphabet_min):
+        label_erreur_mdp['text'] = "Le mot de passe doit contenir au moins une lettre minuscule"
+    elif not verification(mdp, alphabet_maj):
+        label_erreur_mdp['text'] = "Le mot de passe doit contenir au moins une lettre majuscule"
+    elif not verification(mdp, chiffres):
+        label_erreur_mdp['text'] = "Le mot de passe doit contenir au moins un chiffre"
+    elif not verification(mdp, caracteres_speciaux):
+        label_erreur_mdp['text'] = "Le mot de passe doit contenir au moins un caractère spécial (!, @, #, $, %, ^, &, *)"
+    else:
+        return True
+
+def test():
+    mdp = mdp_var.get()
+    label_erreur_mdp['text'] = mdp
 
 fenetre = Tk()
 fenetre.title("Password Validator")
@@ -55,32 +95,20 @@ frame_mdp = Frame(fenetre, bg="#C5E8FC")
 label_mdp = Label(frame_mdp, text="", font=("Helvetica", 27, "bold"), fg="#0B3669", bg="#C5E8FC")
 label_mdp.pack()
 
-entry_mdp = Entry(frame_mdp, font=("Helvetica", 20), show="*")
+mdp_var = StringVar()
+entry_mdp = Entry(frame_mdp, font=("Helvetica", 20), show="*", textvariable=mdp_var)
 entry_mdp.pack(pady=20)
-
-def password_visibility():
-    if show_password_var.get():
-        entry_mdp.config(show="")
-    else:
-        entry_mdp.config(show="*")
-
-def valider_mdp(mdp):
-    if len(mdp) < 8:
-        return "Le mot de passe doit contenir au moins 8 caractères"
-    elif not verification(mdp, alphabet_min):
-        return "Le mot de passe doit contenir au moins une lettre minuscule"
-    elif not verification(mdp, alphabet_maj):
-        return "Le mot de passe doit contenir au moins une lettre majuscule"
-    elif not verification(mdp, chiffres):
-        return "Le mot de passe doit contenir au moins un chiffre"
-    elif not verification(mdp, caracteres_speciaux):
-        return "Le mot de passe doit contenir au moins un caractère spécial (!, @, #, $, %, ^, &, *)"
-    else:
-        return True
 
 show_password_var = BooleanVar()
 show_password_check = Checkbutton(frame_mdp, text="Afficher le mot de passe", variable=show_password_var,command=password_visibility, 
 fg="#0B3669", bg="#C5E8FC", activebackground="#C5E8FC", activeforeground="#0B3669")
-show_password_check.pack(pady=5)
+show_password_check.pack()
+
+btn_mdp = Button(frame_mdp, text="Valider", font=("Helvetica", 15, "bold"), bg="#0B3669", fg="white",activebackground="#D6F0FF", activeforeground="#0B3669", relief="flat", bd=0,padx=50, 
+pady=10, cursor="hand2", highlightthickness=0, command=valider_mdp)
+btn_mdp.pack(pady=20)
+
+label_erreur_mdp = Label(frame_mdp, text="", font=("Helvetica", 18, "bold"), fg="#0B3669", bg="#C5E8FC")
+label_erreur_mdp.pack()
 
 fenetre.mainloop()
