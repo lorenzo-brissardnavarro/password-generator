@@ -1,5 +1,6 @@
 from tkinter import *
 from PIL import Image, ImageTk
+from tkinter import messagebox
 import json
 import string
 from hashlib import sha256
@@ -16,12 +17,8 @@ def page_utilisateur():
 def page_mdp():
     nom_utilisateur = entry_utilisateur.get()
     frame_utilisateur.pack_forget()
-    frame_mdp.pack(pady=100)
+    frame_mdp.pack(pady=180)
     label_mdp.config(text=f"Bonjour {nom_utilisateur}, saisissez votre mot de passe :")
-
-def hachage():
-    frame_mdp.pack_forget()
-    frame_choix.pack(pady=100)
 
 def password_visibility():
     if show_password_var.get():
@@ -36,9 +33,59 @@ def verification(mdp, comparateur):
             presence = True
     return presence
 
+def hachage(username, mdp):
+    mdp_crypt = sha256(mdp.encode('utf-8')).hexdigest()
+    try:
+        with open('mots_de_passe.json', 'r') as fichier:
+            donnees = json.load(fichier)
+    except FileNotFoundError:
+        donnees = []
+    for element in donnees:
+        if element['username'] == username:
+            if mdp_crypt in element['mdp']:
+                messagebox.showerror("Mot de passe en double", "Ce mot de passe est déjà présent dans le fichier !")
+                return
+            element['mdp'].append(mdp_crypt)
+            messagebox.showinfo("Sauvegarde réussi", "Mot de passe enregistré !")
+            break
+    else:
+        frame_mdp.pack_forget()
+        frame_affichage.pack(pady=100)
+        dico = {'username': username, 'mdp': [mdp_crypt]}
+        donnees.append(dico)
+        messagebox.showinfo("Sauvegarde réussi", "Utilisateur créé et mot de passe enregistré !")
+    with open('mots_de_passe.json', 'w') as fichier:
+        json.dump(donnees, fichier, indent=4)
+    afficher_mdp(username)
+
+def afficher_mdp(username):
+    frame_mdp.pack_forget()
+    reponse = messagebox.askquestion("Question", "Voulez-vous afficher vos mots de passe hachés ?")
+    if reponse == 'yes':
+        frame_affichage.pack(fill="both", expand=True, pady=40)
+        with open('mots_de_passe.json', 'r') as fichier:
+            donnees = json.load(fichier)
+        for element in donnees:
+            if element['username'] == username:
+                liste_mdp = ""
+                for mdp in element['mdp']:
+                    liste_mdp += f"=> {mdp}\n"
+                label_liste = Label(frame_affichage,text=liste_mdp, font=("Helvetica", 15), fg="#0B3669", bg="#C5E8FC", justify="left")
+                label_liste.pack()
+                break
+    else:
+        frame_affichage.pack(fill="both", expand=True, pady=80)
+        label_affichage.config(text="Merci de votre confiance !")
+
+def appeler_hachage():
+    username = entry_utilisateur.get()
+    mdp = mdp_var.get()
+    hachage(username, mdp)
+
 def valider_mdp(var, index, mode):
     mdp = mdp_var.get()
     label_erreur_mdp.config(fg="red")
+    btn_mdp.config(cursor="arrow")
     btn_mdp.config(state=DISABLED)
     if len(mdp) < 8:
         label_erreur_mdp['text'] = "Le mot de passe doit contenir au moins 8 caractères"
@@ -53,6 +100,7 @@ def valider_mdp(var, index, mode):
     else:
         label_erreur_mdp.config(fg="green")
         label_erreur_mdp['text'] = "Le mot de passe répond bien aux exigences !"
+        btn_mdp.config(cursor="hand2")
         btn_mdp.config(state=NORMAL)
 
 fenetre = Tk()
@@ -110,16 +158,21 @@ fg="#0B3669", bg="#C5E8FC", activebackground="#C5E8FC", activeforeground="#0B366
 show_password_check.pack()
 
 btn_mdp = Button(frame_mdp, text="Valider", font=("Helvetica", 15, "bold"), bg="#0B3669", fg="white",activebackground="#D6F0FF", activeforeground="#0B3669", relief="flat", bd=0,padx=50, 
-pady=10, cursor="hand2", highlightthickness=0, state=DISABLED, command=hachage)
+pady=10, cursor="arrow", highlightthickness=0, state=DISABLED, command=appeler_hachage)
 btn_mdp.pack(pady=20)
 
 label_erreur_mdp = Label(frame_mdp, text="", font=("Helvetica", 18, "bold"), fg="red", bg="#C5E8FC")
 label_erreur_mdp.pack()
 
-#Page choix
-frame_choix = Frame(fenetre, bg="#C5E8FC")
+#Page affichage
+frame_affichage = Frame(fenetre, bg="#C5E8FC")
 
+label_affichage = Label(frame_affichage, text="Voici la liste de vos mots de passe hachés", font=("Helvetica", 27, "bold"), fg="#0B3669", bg="#C5E8FC")
+label_affichage.pack()
 
-
+image_pain = Image.open("pain_epice.png")
+image_pain = ImageTk.PhotoImage(image_pain)
+label_pain = Label(frame_affichage, image=image_pain, bg="#C5E8FC")
+label_pain.pack(pady=30)
 
 fenetre.mainloop()
