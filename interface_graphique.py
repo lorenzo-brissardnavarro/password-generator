@@ -19,6 +19,10 @@ def page_mdp():
     frame_mdp.pack(pady=100)
     label_mdp.config(text=f"Bonjour {nom_utilisateur}, saisissez votre mot de passe :")
 
+def hachage():
+    frame_mdp.pack_forget()
+    frame_choix.pack(pady=100)
+
 def password_visibility():
     if show_password_var.get():
         entry_mdp.config(show="")
@@ -32,8 +36,10 @@ def verification(mdp, comparateur):
             presence = True
     return presence
 
-def valider_mdp():
+def valider_mdp(var, index, mode):
     mdp = mdp_var.get()
+    label_erreur_mdp.config(fg="red")
+    btn_mdp.config(state=DISABLED)
     if len(mdp) < 8:
         label_erreur_mdp['text'] = "Le mot de passe doit contenir au moins 8 caractères"
     elif not verification(mdp, alphabet_min):
@@ -45,11 +51,9 @@ def valider_mdp():
     elif not verification(mdp, caracteres_speciaux):
         label_erreur_mdp['text'] = "Le mot de passe doit contenir au moins un caractère spécial (!, @, #, $, %, ^, &, *)"
     else:
-        return True
-
-def test():
-    mdp = mdp_var.get()
-    label_erreur_mdp['text'] = mdp
+        label_erreur_mdp.config(fg="green")
+        label_erreur_mdp['text'] = "Le mot de passe répond bien aux exigences !"
+        btn_mdp.config(state=NORMAL)
 
 fenetre = Tk()
 fenetre.title("Password Validator")
@@ -73,7 +77,7 @@ btn_start.pack(side="bottom", pady=30)
 
 
 
-#Page demande nom utilisateur
+#Page saisie nom utilisateur
 frame_utilisateur = Frame(fenetre, bg="#C5E8FC")
 
 label_utilisateur = Label(frame_utilisateur, text="Saisissez votre nom d'utilisateur :", font=("Helvetica", 27, "bold"), fg="#0B3669", bg="#C5E8FC")
@@ -89,13 +93,14 @@ btn_utilisateur.pack()
 
 
 
-#Page choix utilisateur
+#Page saisie mot de passe
 frame_mdp = Frame(fenetre, bg="#C5E8FC")
 
 label_mdp = Label(frame_mdp, text="", font=("Helvetica", 27, "bold"), fg="#0B3669", bg="#C5E8FC")
 label_mdp.pack()
 
 mdp_var = StringVar()
+mdp_var.trace_add('write', valider_mdp)
 entry_mdp = Entry(frame_mdp, font=("Helvetica", 20), show="*", textvariable=mdp_var)
 entry_mdp.pack(pady=20)
 
@@ -105,10 +110,16 @@ fg="#0B3669", bg="#C5E8FC", activebackground="#C5E8FC", activeforeground="#0B366
 show_password_check.pack()
 
 btn_mdp = Button(frame_mdp, text="Valider", font=("Helvetica", 15, "bold"), bg="#0B3669", fg="white",activebackground="#D6F0FF", activeforeground="#0B3669", relief="flat", bd=0,padx=50, 
-pady=10, cursor="hand2", highlightthickness=0, command=valider_mdp)
+pady=10, cursor="hand2", highlightthickness=0, state=DISABLED, command=hachage)
 btn_mdp.pack(pady=20)
 
-label_erreur_mdp = Label(frame_mdp, text="", font=("Helvetica", 18, "bold"), fg="#0B3669", bg="#C5E8FC")
+label_erreur_mdp = Label(frame_mdp, text="", font=("Helvetica", 18, "bold"), fg="red", bg="#C5E8FC")
 label_erreur_mdp.pack()
+
+#Page choix
+frame_choix = Frame(fenetre, bg="#C5E8FC")
+
+
+
 
 fenetre.mainloop()
