@@ -36,7 +36,7 @@ def verification(mdp, comparateur):
 def hachage(username, mdp):
     mdp_crypt = sha256(mdp.encode('utf-8')).hexdigest()
     try:
-        with open('mots_de_passe.json', 'r') as fichier:
+        with open('fichier_json/mots_de_passe.json', 'r') as fichier:
             donnees = json.load(fichier)
     except FileNotFoundError:
         donnees = []
@@ -54,7 +54,7 @@ def hachage(username, mdp):
         dico = {'username': username, 'mdp': [mdp_crypt]}
         donnees.append(dico)
         messagebox.showinfo("Sauvegarde réussi", "Utilisateur créé et mot de passe enregistré !")
-    with open('mots_de_passe.json', 'w') as fichier:
+    with open('fichier_json/mots_de_passe.json', 'w') as fichier:
         json.dump(donnees, fichier, indent=4)
     afficher_mdp(username)
 
@@ -63,7 +63,7 @@ def afficher_mdp(username):
     reponse = messagebox.askquestion("Question", "Voulez-vous afficher vos mots de passe hachés ?")
     if reponse == 'yes':
         frame_affichage.pack(fill="both", expand=True, pady=40)
-        with open('mots_de_passe.json', 'r') as fichier:
+        with open('fichier_json/mots_de_passe.json', 'r') as fichier:
             donnees = json.load(fichier)
         for element in donnees:
             if element['username'] == username:
@@ -76,6 +76,10 @@ def afficher_mdp(username):
     else:
         frame_affichage.pack(fill="both", expand=True, pady=80)
         label_affichage.config(text="Merci de votre confiance !")
+        image_pain = Image.open("images/pain_epice.png")
+        image_pain = ImageTk.PhotoImage(image_pain)
+        label_pain = Label(frame_affichage, image=image_pain, bg="#C5E8FC")
+        label_pain.pack(pady=30)
 
 def appeler_hachage():
     username = entry_utilisateur.get()
@@ -113,7 +117,7 @@ fenetre.configure(bg="#C5E8FC")
 frame_accueil = Frame(fenetre, bg="#C5E8FC")
 frame_accueil.pack(fill="both", expand=True)
 
-image_originale = Image.open("image_background.png")
+image_originale = Image.open("images/image_background.png")
 image_redim = image_originale.resize((940, 680))
 bg = ImageTk.PhotoImage(image_redim)
 label_photo = Label(frame_accueil, image=bg)
@@ -169,10 +173,5 @@ frame_affichage = Frame(fenetre, bg="#C5E8FC")
 
 label_affichage = Label(frame_affichage, text="Voici la liste de vos mots de passe hachés", font=("Helvetica", 27, "bold"), fg="#0B3669", bg="#C5E8FC")
 label_affichage.pack()
-
-image_pain = Image.open("pain_epice.png")
-image_pain = ImageTk.PhotoImage(image_pain)
-label_pain = Label(frame_affichage, image=image_pain, bg="#C5E8FC")
-label_pain.pack(pady=30)
 
 fenetre.mainloop()
